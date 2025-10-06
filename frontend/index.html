@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechThings Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>🌐 TechThings IoT Dashboard</h1>
+    <p>Monitoramento em tempo real dos dispositivos ESP32</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>📈 Sensor de Velocidade (Encoder)</h2>
+      <canvas id="velocidadeChart"></canvas>
+      <div class="dados-atuais">
+        <p><strong>Última leitura:</strong> <span id="ultimaLeitura">--</span></p>
+        <p><strong>Total de detecções:</strong> <span id="totalDeteccoes">0</span></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>🛰️ Dispositivos Conectados</h2>
+      <ul id="listaDispositivos"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Desenvolvido por <strong>TechThings</strong> • UFSM • 2025/02</p>
+  </footer>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
