@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TechThings Dashboard</title>
+  <title>TechThings IoT Dashboard</title>
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -14,15 +14,85 @@
   </header>
 
   <main>
+    <!-- Sensor de Velocidade -->
     <section class="card">
-      <h2>📈 Sensor de Velocidade (Encoder)</h2>
-      <canvas id="velocidadeChart"></canvas>
+      <h2>⚙️ Sensor de Velocidade (Encoder)</h2>
+      <canvas id="chartVelocidade"></canvas>
       <div class="dados-atuais">
-        <p><strong>Última leitura:</strong> <span id="ultimaLeitura">--</span></p>
-        <p><strong>Total de detecções:</strong> <span id="totalDeteccoes">0</span></p>
+        <p><strong>Última leitura:</strong> <span id="ultimaVelocidade">--</span></p>
       </div>
     </section>
 
+    <!-- Sensor de Temperatura -->
+    <section class="card">
+      <h2>🌡️ Sensor de Temperatura (DS18B20)</h2>
+      <canvas id="chartTemperatura"></canvas>
+      <div class="dados-atuais">
+        <p><strong>Temperatura atual:</strong> <span id="tempAtual">--</span> °C</p>
+      </div>
+    </section>
+
+    <!-- Sensor de Distância -->
+    <section class="card">
+      <h2>📏 Sensor Ultrassônico (HC-SR04)</h2>
+      <canvas id="chartDistancia"></canvas>
+      <div class="dados-atuais">
+        <p><strong>Distância:</strong> <span id="distAtual">--</span> cm</p>
+      </div>
+    </section>
+
+    <!-- Acelerômetro / Giroscópio -->
+    <section class="card">
+      <h2>🧭 Acelerômetro / Giroscópio (MPU6050)</h2>
+      <canvas id="chartMPU"></canvas>
+      <div class="dados-atuais">
+        <p><strong>Movimento detectado:</strong> <span id="mpuAtual">--</span></p>
+      </div>
+    </section>
+
+    <!-- Sensor de Gestos / Cor -->
+    <section class="card">
+      <h2>🎨 Sensor de Gestos e Cor (APDS-9960)</h2>
+      <canvas id="chartGestos"></canvas>
+      <div class="dados-atuais">
+        <p><strong>Último gesto:</strong> <span id="gestoAtual">--</span></p>
+      </div>
+    </section>
+
+    <!-- Joystick -->
+    <section class="card">
+      <h2>🕹️ Joystick (KY023)</h2>
+      <canvas id="chartJoystick"></canvas>
+      <div class="dados-atuais">
+        <p><strong>Eixo X:</strong> <span id="joyX">--</span> | <strong>Eixo Y:</strong> <span id="joyY">--</span></p>
+      </div>
+    </section>
+
+    <!-- Servo Motor -->
+    <section class="card">
+      <h2>⚙️ Micro Servo Motor (SG90)</h2>
+      <p><strong>Ângulo atual:</strong> <span id="servoAngulo">--</span>°</p>
+    </section>
+
+    <!-- Relé -->
+    <section class="card">
+      <h2>🔌 Módulo Relé (JQC3F)</h2>
+      <p><strong>Status:</strong> <span id="statusRele">Desligado</span></p>
+    </section>
+
+    <!-- Teclado -->
+    <section class="card">
+      <h2>⌨️ Teclado Matricial 4x4</h2>
+      <p><strong>Última tecla:</strong> <span id="teclaPressionada">--</span></p>
+    </section>
+
+    <!-- Controle IR -->
+    <section class="card">
+      <h2>📡 Controle IR + Receptor</h2>
+      <p><strong>Último código:</strong> <span id="codigoIR">--</span></p>
+    </section>
+
+    <!-- Lista de Dispositivos -->
     <section class="card">
       <h2>🛰️ Dispositivos Conectados</h2>
       <ul id="listaDispositivos"></ul>
