@@ -1,0 +1,65 @@
+:root{
+  --primary:#004aad;
+  --bg:#f5f7fa;
+  --card:#ffffff;
+  --muted:#666;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family: "Poppins", Arial, sans-serif;
+  background:var(--bg);
+  color:#222;
+  min-height:100vh;
+}
+
+/* header */
+.app-header{
+  background:var(--primary);
+  color:white;
+  padding:1.2rem 1rem;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+.header-inner{max-width:1100px;margin:0 auto;text-align:center}
+.header-inner h1{font-size:1.4rem}
+.header-inner p{font-size:0.95rem;opacity:0.95}
+
+/* main layout */
+.dashboard-main{max-width:1200px;margin:1.4rem auto;padding:0 1rem}
+.top-row{display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.summary-card, .devices-card{
+  background:var(--card);padding:1rem;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,0.04);
+}
+.summary-card{flex:1;min-width:260px}
+.devices-card{width:260px;min-width:180px}
+.summary-card .big{font-size:1.1rem;font-weight:600;margin:0.4rem 0}
+.devices-card ul{list-style:none;padding-left:0}
+.devices-card li{padding:0.2rem 0}
+
+/* grid cards */
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+.sensor-card{
+  background:var(--card);padding:1rem;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,0.04);
+}
+.sensor-card h4{color:var(--primary);margin-bottom:0.6rem;font-size:1rem}
+.sensor-main{display:flex;gap:1rem;align-items:center}
+.sensor-value{min-width:120px}
+.sensor-value .val{font-size:1.4rem;font-weight:700;color:#222}
+.sensor-value .unit{display:block;font-size:0.85rem;color:var(--muted)}
+.sensor-visual{flex:1}
+.chart-wrap{height:120px}
+
+/* fallback raw output */
+.raw-output{font-size:0.75rem;color:#333;background:#f4f6f8;padding:6px;border-radius:6px;overflow:auto}
+
+/* small */
+.ok{color:green;font-weight:600}
+.nok{color:crimson;font-weight:600}
+
+/* responsive tweaks */
+@media (max-width:640px){
+  .top-row{flex-direction:column}
+  .devices-card{width:100%}
+  .sensor-main{flex-direction:column;align-items:flex-start}
+  .sensor-value{min-width:100%}
+}

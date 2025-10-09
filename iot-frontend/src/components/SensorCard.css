@@ -1,0 +1,19 @@
+.sensor-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sensor-card canvas {
+  width: 100% !important;
+  height: 180px !important;
+  max-height: 200px;
+  display: block;
+  margin-top: 0.5rem;
+}
