@@ -10,7 +10,6 @@ export default function SensorCard({ title, value, unit, history = [], raw }) {
 
   useEffect(() => {
     // Se for um sensor de teclado, não tentamos renderizar um gráfico.
-    // O useEffect é ignorado para esses sensores.
     if (isKeyboardSensor) {
       if (chartRef.current) {
         chartRef.current.destroy();
@@ -71,17 +70,35 @@ export default function SensorCard({ title, value, unit, history = [], raw }) {
         chartRef.current = null;
       }
     };
-  }, [history, title, isKeyboardSensor]); // Adicionado isKeyboardSensor às dependências
+  }, [history, title, isKeyboardSensor]);
 
   // Verificação para exibir o histórico numérico apenas se não for um sensor de teclado
   const hasNumericHistory = !isKeyboardSensor && history.some(h => !isNaN(parseFloat(h)));
+
+  /**
+   * Função para renderizar o output do teclado.
+   * Ela verifica o valor e retorna um JSX customizado
+   * para os status de acesso.
+   */
+  const renderKeyboardOutput = () => {
+    switch (value) {
+      case "acesso_liberado":
+        return <p className="keyboard-status liberado">Acesso Liberado</p>;
+      case "acesso_negado":
+        return <p className="keyboard-status negado">Acesso Negado</p>;
+      default:
+        // Para qualquer outro valor (como a digitação "*1234"),
+        // mantém o comportamento original.
+        return <pre className="keyboard-output">{value}</pre>;
+    }
+  };
 
   return (
     <div className="sensor-card">
       <h3>{title}</h3>
       {isKeyboardSensor ? (
-        // Se for um sensor de teclado, exibe o valor como um bloco de texto formatado
-        <pre className="keyboard-output">{value}</pre>
+        // Se for um sensor de teclado, usa a nova lógica de renderização
+        renderKeyboardOutput()
       ) : (
         // Caso contrário, exibe o valor normal com a unidade
         <p className="value">
