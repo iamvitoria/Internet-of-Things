@@ -8,11 +8,11 @@ const SENSORS = [
   { key: "gesto", title: "Sensor de Gestos — APDS-9960", unit: "" },
   { key: "velocidade", title: "Sensor de Velocidade", unit: "pulsos" },
   { key: "distancia", title: "Sensor Ultrassônico", unit: "cm" },
-  { key: "rele", title: "Relé", unit: "" },
+  // { key: "rele", title: "Relé", unit: "" },  // 🚫 Removido da interface
   { key: "servo", title: "Servo Motor", unit: "°" },
   { key: "joystick", title: "Joystick", unit: "" },
   { key: "teclado", title: "Teclado Matricial", unit: "" },
-  { key: "ir", title: "Receptor IR", unit: "" }
+  // { key: "ir", title: "Receptor IR", unit: "" } // 🚫 Removido da interface
 ];
 
 function gerarFake() {

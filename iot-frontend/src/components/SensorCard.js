@@ -6,10 +6,17 @@ export default function SensorCard({ title, value, unit, history = [], raw }) {
   const chartRef = useRef(null);
 
   const isKeyboard = title.toLowerCase().includes("teclado");
-  const isRele = title.toLowerCase().includes("relé");
+
+  // 🔻 TIPOS que foram desativados:
+  // const isRele = title.toLowerCase().includes("relé");
+  // const isIR = title.toLowerCase().includes("infravermelho") || title.toLowerCase().includes("ir");
+
   const isTemp = title.toLowerCase().includes("temperatura");
 
-  const semGrafico = isKeyboard || isRele;
+  // Antes: teclado ou relé
+  // Agora: apenas teclado não terá gráfico
+  const semGrafico = isKeyboard;
+  // const semGrafico = isKeyboard || isRele || isIR;
 
   useEffect(() => {
     if (semGrafico) {
@@ -30,7 +37,6 @@ export default function SensorCard({ title, value, unit, history = [], raw }) {
       .filter(n => n !== null);
 
     const ctx = canvasRef.current.getContext("2d");
-
     if (!numeric.length) return;
 
     if (chartRef.current) {
@@ -81,11 +87,21 @@ export default function SensorCard({ title, value, unit, history = [], raw }) {
     return <pre className="keyboard-output">{value}</pre>;
   };
 
+  // 🔻 Render do Relé removido temporariamente
+  /*
   const renderRele = () => {
     if (value === "ON")
       return <p className="rele-on">Relé Ligado</p>;
     return <p className="rele-off">Relé Desligado</p>;
   };
+  */
+
+  // 🔻 Render IR removido temporariamente
+  /*
+  const renderIR = () => (
+    <p className="ir-status">{value}</p>
+  );
+  */
 
   return (
     <div className="sensor-card">
@@ -93,9 +109,14 @@ export default function SensorCard({ title, value, unit, history = [], raw }) {
 
       {isKeyboard ? (
         renderKeyboard()
-      ) : isRele ? (
-        renderRele()
-      ) : isTemp ? (
+      ) :
+      // 🔻 Trechos removidos:
+      // isRele ? (
+      //   renderRele()
+      // ) : isIR ? (
+      //   renderIR()
+      // ) :
+      isTemp ? (
         <p className="value">
           {value}°C — {raw?.humidity ?? "--"}%
         </p>
