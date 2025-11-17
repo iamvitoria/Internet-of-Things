@@ -1,126 +1,104 @@
-export const BASE_URL = "http://localhost:3000"; // <- ajuste se necessário
+export const BASE_URL = "https://api-cogr.onrender.com/readings";
 
 /**
- * Função principal que será chamada pelo React.
- * Ela busca os dados brutos e os processa antes de entregar.
+ * Busca os dados na API e retorna sensores normalizados
  */
 export async function fetchDados() {
   try {
-    const res = await fetch(`${BASE_URL}/api/dados`);
-    if (!res.ok) throw new Error("Erro na resposta do backend");
+    const res = await fetch(BASE_URL);
+    if (!res.ok) throw new Error("Erro no backend");
 
-    // 1. Pega a lista de eventos brutos da API
-    const dadosBrutos = await res.json();
-
-    // 2. Processa a lista para agrupar por sensor
-    const dadosProcessados = processarDadosBrutos(dadosBrutos);
-
-    // 3. Retorna os dados já prontos para o App.js
-    // Convertemos o objeto em um array para facilitar o .map() no React
-    return Object.values(dadosProcessados);
+    const dados = await res.json();
+    return Object.values(processar(dados));
 
   } catch (err) {
-    // Propaga o erro para o UI tratar
-    console.error("Erro em fetchDados:", err);
+    console.error("Erro fetchDados:", err);
     throw err;
   }
 }
 
 /**
- * ------------------------------------------------------------------
- * FUNÇÃO DE PROCESSAMENTO (INTERNA DO API.JS)
- * ------------------------------------------------------------------
- * Converte a lista longa de eventos em um objeto de *sensores*,
- * cada um com seu último valor e histórico.
- * Esta função NÃO é exportada, é usada apenas internamente.
+ * Processa o array de eventos retornados pelo /readings
  */
-function processarDadosBrutos(dados) {
-  if (!dados || dados.length === 0) return {};
+function processar(lista) {
+  if (!lista || !lista.length) return {};
 
-  // Mapeia os IDs para nomes amigáveis e define a unidade
-  const configSensores = {
-    "99efc3b2-3ea5-4e41-8343-d237238cf5f1": {
-      title: "Temperatura",
-      unit: "°C"
-    },
-    "9dc544ee-36bd-4a52-a69a-f4cf8cffe578": {
-      title: "Teclado",
-      unit: ""
-    },
-    // Adicione outros IDs e nomes aqui se necessário
+  const config = {
+    "99efc3b2-3ea5-4e41-8343-d237238cf5f1": { title: "Temperatura", unit: "°C" },
+    "9dc544ee-36bd-4a52-a69a-f4cf8cffe578": { title: "Teclado", unit: "" },
+    "1335bab9-5f60-4619-a73c-8070deded4c3": { title: "Relé", unit: "" },
   };
 
   const sensores = {};
 
-  // Itera sobre cada evento (leitura) vindo da API
-  for (const evento of dados) {
-    const id = evento.componentId;
-
-    // Pula se não for um ID que queremos
-    if (!configSensores[id]) continue;
+  for (const evt of lista) {
+    if (!config[evt.componentId]) continue;
 
     let data;
     try {
-      // Garante que 'data' seja um objeto, mesmo que venha como string
-      data = typeof evento.data === 'string' ? JSON.parse(evento.data) : evento.data;
-    } catch (e) {
-      console.warn("Ignorando dado mal formatado:", evento.data);
-      continue; // Pula este evento se o JSON for inválido
+      data = typeof evt.data === "string" ? JSON.parse(evt.data) : evt.data;
+    } catch {
+      continue;
     }
 
-    const timestamp = new Date(evento.recordedAt).getTime(); // Para ordenação
+    const id = evt.componentId;
+    const ts = new Date(evt.recordedAt).getTime();
 
-    // Se é a primeira vez que vemos esse sensor, inicializa seu "objeto"
     if (!sensores[id]) {
       sensores[id] = {
-        id: id,
-        title: configSensores[id].title,
-        unit: configSensores[id].unit,
-        history: [], // Histórico de valores
-        value: null, // O último valor registrado
-        lastUpdate: 0, // O timestamp do último valor
+        id,
+        title: config[id].title,
+        unit: config[id].unit,
+        value: null,
+        humidity: null,
+        history: [],
+        lastUpdate: 0
       };
     }
 
-    // Processa os diferentes formatos de dados e extrai o valor
-    let valorExtraido = null;
+    let valor = null;
 
-    if (data.temperature) {
-      valorExtraido = data.temperature;
-    } else if (data.t) {
-      valorExtraido = data.t;
-    } else if (data.humidity) { // Exemplo se quiser histórico de umidade
-      // Se você quiser tratar a umidade como um sensor separado,
-      // precisará de um componentId diferente.
-      // Aqui, estamos assumindo que é parte do mesmo sensor.
-      // Apenas a temperatura será usada como 'valorExtraido' principal.
-    } else if (data.h) {
-      // idem
-    } else if (data.value) { // Sensor do Teclado (digitação)
-      valorExtraido = data.value;
-    } else if (data.status) { // Sensor do Teclado (status de acesso)
-      valorExtraido = data.status;
-    } else if (data.senha) { // Ignora dados de senha no histórico
-      valorExtraido = "******"; // Mostra asteriscos
-    }
-    // Adicione mais 'else if' se tiver outros formatos de dados
-
-    // Adiciona o valor ao histórico (se ele foi extraído e não é nulo)
-    if (valorExtraido !== null) {
-      sensores[id].history.push(valorExtraido);
+    // ───────────────────────────────────────────────
+    // ✔ 1) TEMPERATURA REAL (t ou temperature)
+    // ───────────────────────────────────────────────
+    if (data.temperature || data.t) {
+      valor = data.temperature ?? data.t;
+      sensores[id].humidity = data.humidity ?? data.h ?? null;
     }
 
-    // Atualiza o "valor atual" (o que aparece grande no card)
-    // se este evento for o mais recente que já vimos para este sensor.
-    if (timestamp > sensores[id].lastUpdate) {
-      // Não atualiza o valor principal se for 'senha'
-      if (!data.senha) {
-         sensores[id].value = valorExtraido;
-      }
-      sensores[id].lastUpdate = timestamp;
+    // ───────────────────────────────────────────────
+    // ✔ 2) Teclado e Relé (caso venham em "value")
+    // ───────────────────────────────────────────────
+    else if (data.value !== undefined) {
+      valor = data.value;
+    }
+
+    // ───────────────────────────────────────────────
+    // ✔ 3) Ignorar "status" para TEMPERATURA
+    //    (ex: {status:"temp_alta"} não deve virar valor)
+    // ───────────────────────────────────────────────
+    else if (data.status && config[id].title !== "Temperatura") {
+      valor = data.status;
+    }
+
+    // Se não for nada disso, ignora completamente
+    else {
+      continue;
+    }
+
+    // ───────────────────────────────────────────────
+    // ✔ Atualiza histórico e último valor
+    // ───────────────────────────────────────────────
+    if (valor !== null) {
+      sensores[id].history.push(valor);
+      sensores[id].history = sensores[id].history.slice(-25);
+    }
+
+    if (ts > sensores[id].lastUpdate) {
+      sensores[id].value = valor;
+      sensores[id].lastUpdate = ts;
     }
   }
 
-  // Retorna o objeto de sensores { "id_temp": {...}, "id_teclado": {...} }
   return sensores;
 }
